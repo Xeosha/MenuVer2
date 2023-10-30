@@ -10,13 +10,24 @@ namespace Menu
     {
         public string Text { get; set; }
 
-        public Action Function { get; set; }
+        private Delegate function;
 
-        
-        public Options(string text, Action newFucntion)
+        public void SetDelegate(Delegate newFunction)
+        {
+            this.function = newFunction;
+        }
+
+        public object GetFunction(params object[] args)
+        {
+            if (function != null)
+                return function.DynamicInvoke(args);
+            throw new InvalidOperationException("Функция не установлена");
+
+        }
+        public Options(string text, Delegate newFucntion)
         {
             this.Text = text;
-            this.Function = newFucntion;
+            this.function = newFucntion;
         }
     }
     public class Dialog
@@ -86,7 +97,7 @@ namespace Menu
                         break;
                     case ConsoleKey.Enter:
                         Console.WriteLine($"> Выбран пункт {_options[index].Text}\n");
-                        _options[index].Function();
+                        _options[index].GetFunction();
                         Console.WriteLine("\n> Нажмитие esc для выхода");
                         Console.ReadKey(true);
                         break;
